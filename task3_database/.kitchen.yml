@@ -1,0 +1,28 @@
+---
+driver:
+  name: vagrant
+  network:
+    - ["private_network", {ip: "192.168.56.104"}]
+  synced_folders:
+    - ["./rpms", "/tmp/rpms"]
+
+provisioner:
+  name: chef_zero
+  require_chef_omnibus: 13.3.42
+  chef_omnibus_url: file:///tmp/rpms/chef_client.sh
+  always_update_cookbooks: true
+
+verifier:
+  name: inspec
+
+platforms:
+  - name: sbeliakou/centos-7.3-x86_64-minimal
+
+suites:
+  - name: default
+    run_list:
+      - recipe[task3_database::default]
+    verifier:
+      inspec_tests:
+        - test/smoke/default
+    attributes:
